@@ -1,2 +1,4 @@
+import ReactiveEventType from './ReactiveEventType';
+
 export { setup } from './setup';
-export { default as ReactiveEvent } from './ReactiveEvent';
+export { ReactiveEventType };
