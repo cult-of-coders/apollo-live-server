@@ -1,0 +1,53 @@
+{
+  "name": "apollo-live-server",
+  "version": "0.1.0",
+  "description": "Apollo Live Server - Making GraphQL Reactive",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cult-of-coders/apollo-live-server.git"
+  },
+  "peerDependencies": {
+    "uuid": "^3.2.x",
+    "graphql-subscriptions": "^0.5.x"
+  },
+  "scripts": {
+    "clean": "rimraf dist coverage",
+    "compile": "tsc",
+    "pretest": "npm run compile",
+    "test": "npm run testonly --",
+    "test-watch": "npm run testonly-watch --",
+    "posttest": "npm run lint",
+    "lint": "tslint --type-check --project ./tsconfig.json ./src/**/*.ts",
+    "watch": "tsc -w",
+    "testonly": "mocha --reporter spec --full-trace ./dist/test/*.js",
+    "testonly-watch":
+      "mocha --reporter spec --full-trace ./dist/test/*.js --watch",
+    "coverage":
+      "node ./node_modules/istanbul/lib/cli.js cover _mocha -- --full-trace ./dist/test/*.js",
+    "postcoverage":
+      "remap-istanbul --input coverage/coverage.raw.json --type lcovonly --output coverage/lcov.info",
+    "prepublishOnly": "npm run clean && npm run compile"
+  },
+  "devDependencies": {
+    "@types/graphql": "^0.11.3",
+    "@types/mocha": "^2.2.39",
+    "@types/node": "^8.0.28",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "graphql": "^0.13.0",
+    "istanbul": "^1.0.0-alpha.2",
+    "mocha": "^3.3.0",
+    "remap-istanbul": "^0.9.1",
+    "rimraf": "^2.6.2",
+    "sinon": "^3.2.1",
+    "sinon-chai": "^2.9.0",
+    "tslint": "^5.2.0",
+    "typescript": "^2.3.2"
+  },
+  "typings": "dist/index.d.ts",
+  "typescript": {
+    "definition": "dist/index.d.ts"
+  },
+  "license": "MIT"
+}
