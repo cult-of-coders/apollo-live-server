@@ -54,7 +54,7 @@ const resolvers = {
         return Items.asyncIterator() // it accepts filters and options as arguments
       }
     },
-    items: {
+    item: {
       resolve: payload => payload,
       subscribe(_, {_id}) {
         return Items.asyncIterator({_id})
