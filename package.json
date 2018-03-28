@@ -1,6 +1,6 @@
 {
   "name": "apollo-live-server",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Apollo Live Server - Making GraphQL Reactive",
   "main": "dist/index.js",
   "repository": {
