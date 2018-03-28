@@ -45,14 +45,18 @@ export function createAsyncIterator(
 
   initialAdd = false;
 
-  eventEmitter.on('removeListener', _channel => {
+  const stopObserver = _channel => {
     if (_channel === channel) {
       if (observers[channel]) {
         observers[channel].stop();
         delete observers[channel];
       }
+
+      eventEmitter.removeListener('removeListener', stopObserver);
     }
-  });
+  };
+
+  eventEmitter.on('removeListener', stopObserver);
 
   return pubsub.asyncIterator(channel);
 }
