@@ -1,82 +1,136 @@
 ## Apollo Live Server
 
-This package is mostly for Meteor applications, however you can roll your own integration, as long you respect the interfaces
+This project is sponsored by [Cult of Coders](https://www.cultofcoders.com)
 
-```js
-// make sure you run this before instantiating any collection
-// otherwise reactivity may not work for you
-import { setup } from 'apollo-live-server';
+The interfaces have been crafted to suit `Meteor` applications, however you can easily roll your own implementation for it.
 
-setup({
-  collection: Mongo.Collection,
-});
-```
+React integration: [`apollo-live-client`](https://github.com/cult-of-coders/apollo-live-client)
+Meteor integration: https://github.com/cult-of-coders/apollo
 
-### Prerequisites
+Read more about GraphQL Subscriptions here: https://github.com/apollographql/graphql-subscriptions
 
-* Add GraphQLJSON scalar to your schema.
-* Add ReactiveEvent type from this package
+### Defining Subscription Type
 
-```js
-import { ReactiveEventType } from 'apollo-live-server';
-```
-
-## Usage
-
-```js
-type Query {
-  items: [Item],
-  item(_id: ID!): Item
-}
-
+```gql
 type Subscription {
-  items: ReactiveEvent,
-  item(_id: ID!): ReactiveEvent
+  notifications(options: JSON): ReactiveEventNotifications
+}
+
+type ReactiveEventNotifications {
+  event: String
+  doc: Notification
 }
 ```
 
-```js
-Items.setTypename('Item');
+### Creating Subscriptions
 
-const resolvers = {
-  Query: {
-    items() {
-      return Items.find().fetch()
-    }
-    item(_, {_id}) {
-      return Items.findOne(_id);
-    }
-  },
+A simple, common example:
+
+```js
+import { asyncIterator } from 'apollo-live-server';
+
+{
   Subscription: {
-    items: {
+    notifications: {
       resolve: payload => payload,
-      subscribe() {
-        return Items.asyncIterator() // it accepts filters and options as arguments
-      }
-    },
-    item: {
-      resolve: payload => payload,
-      subscribe(_, {_id}) {
-        return Items.asyncIterator({_id})
+      subscribe(_, args, { db }, ast) {
+        // We assume that you inject `db` context with all your collections
+        // If you are using Meteor, db.notifications is an instance of Mongo.Collection
+        const observable = db.notifications.find();
+
+        return asyncIterator(observable);
       }
     }
   }
 }
 ```
 
-Now when you subscribe to `items` or `item` the subscription will send as payload a ReactiveEvent containing:
+The current limitation is that the reactive events dispatched by this publication are only at `Notification` level
+in the database, but what happens when we want to also send down the pipe nested info, such as, `Task` linked to `Notification`, how can we handle this ?
+
+We hook into the resolver:
 
 ```js
+import { Event } from 'apollo-live-server';
+
 {
-  event: 'added' | 'changed' | 'removed',
-  type: 'Item'
-  _id: 'XXX',
-  doc: { ... }
+  notifications: {
+    resolve: ({event, doc}, args, { db }, ast) => {
+      // The doc in here represents only the changeset
+
+      if (event === Event.ADDED) {
+        // Feel free to create a server-only client that would allow you to do an actual GraphQL request
+        Object.assign(doc, {
+          task: db.tasks.findOne(doc.taskId);
+        })
+      }
+      // You can also apply the same concepts for example when a certain relation is changing.
+
+      return {event, doc};
+    },
+    subscribe() { ... }
+  }
 }
 ```
 
-Based on these events you can process and update your query. To learn how to do this please checkout: `apollo-live-client` package which is suited for `React` and this `ReactiveEvent`
+Now, when we subscribe, we have the ability to subscribe only to certain fields, let's try to do that in our subscription as well:
 
-## Premium Support
+```js
+import { asyncIterator, astToFields } from 'apollo-live-server';
 
-Looking to start or develop your new project with **GraphQL**? Reach out to us now, we can help you along every step: contact@cultofcoders.com. We specialise in building high availability GraphQL APIs and with the help with our awesome frontend developers we can easily consume any GraphQL API.
+{
+  Subscription: {
+    notifications: {
+      resolve: payload => payload,
+      subscribe(_, args, { db }, ast) {
+        const observable = db.notifications.find({}, {
+          // This will extract the fields from fields specified under doc
+          // in the subscription "query" to GraphQL
+          fields: astToFields(ast)
+        })
+
+        return asyncIterator(observable);
+      }
+    }
+  }
+}
+```
+
+You have the ability to listen only to some events and in the same breath, notify the client about something being added without the dataset, only the event. For example you have a newsfeed, and you notify the user that new things have been added:
+
+```js
+import { Event } from 'apollo-live-server';
+
+{
+  Subscription: {
+    notifications: {
+      resolve: payload => ({ event: payload.event })
+      subscribe(_, args, {db}) {
+        const observable = db.feed.find({}, {
+          fields: {_id}
+        })
+
+        return asyncIterator(observable, {
+          events: [Event.ADDED]
+        })
+      }
+    }
+  }
+}
+```
+
+## Options
+
+```js
+asyncIterator(observer, options);
+```
+
+```js
+type Options = {
+  // You can listen only to some custom events
+  events?: Event[],
+
+  // Sends the initial image of your observer down the pipe
+  sendInitialAdds?: boolean,
+};
+```

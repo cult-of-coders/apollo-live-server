@@ -1,11 +1,7 @@
-export enum Events {
+export enum Event {
   ADDED = 'added',
   CHANGED = 'changed',
   REMOVED = 'removed',
-}
-
-export interface SetupConfig {
-  Collection: { prototype: MongoCollection };
 }
 
 export interface ObserverStore {
@@ -16,13 +12,12 @@ export interface ObserveHandler {
   stop(): void;
 }
 
-export interface MongoCursor {
-  observeChanges(observer: object): ObserveHandler;
-}
+export type AsyncIteratorConfig = {
+  events?: Event[];
+  sendInitialAdds?: boolean;
+  channel?: string;
+};
 
-export interface MongoCollection {
-  find(filters?: object, options?: object): MongoCursor;
-  asyncIterator(filters?: object, options?: object): AsyncIterator<object>;
-  getTypename(): string;
-  setTypename(name: string): void;
+export interface Observable {
+  observeChanges(observer: object): ObserveHandler;
 }
