@@ -20,8 +20,9 @@ type NotificationReactiveEvent {
   event: String
 
   # If Notification has required fields, your subscription may not send them
-  # because your subscription only sends changesets, just be careful so you don't have unexpected errors.
-  # If that's the case, you can create your own custom type
+  # because your subscription only sends changesets, just be careful so you don't have unexpected errors
+
+  # If that's the case, you can create your own custom type, or the lazy version, use JSON if you don't want control over it
   doc: Notification
 }
 ```
@@ -124,7 +125,7 @@ import { Event } from 'apollo-live-server';
 }
 ```
 
-In order to display that actionable it's up to you to implement your custom subscription handler. A general example is something along these lines:
+In order to display that actionable it's up to you to implement your custom subscription handler. A general example is something along
 
 ```js
 // client = Apollo Client
