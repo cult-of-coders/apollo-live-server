@@ -7,6 +7,10 @@
     "type": "git",
     "url": "https://github.com/cult-of-coders/apollo-live-server.git"
   },
+  "dependencies": {
+    "lodash.isempty": "^4.4.0",
+    "lodash.mapValues": "^4.6.0"
+  },
   "peerDependencies": {
     "uuid": "^3.2.x",
     "graphql-subscriptions": "^0.5.x"
