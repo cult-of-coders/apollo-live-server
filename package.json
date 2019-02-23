@@ -8,6 +8,7 @@
     "url": "https://github.com/cult-of-coders/apollo-live-server.git"
   },
   "dependencies": {
+    "graphql-fields": "^2.0.1",
     "lodash.isempty": "^4.4.0",
     "lodash.mapValues": "^4.6.0"
   },
