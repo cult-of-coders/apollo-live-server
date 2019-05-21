@@ -1,35 +1,12 @@
-import * as dotize from 'dotize';
+import graphqlFields from 'graphql-fields';
+import isEmpty from 'lodash/isEmpty';
+import mapValues from 'lodash/mapValues';
 
-export default function astToBody(ast) {
-  const fieldNodes = ast.fieldNodes;
-
-  const body = extractSelectionSet(ast.fieldNodes[0].selectionSet);
-
-  return body;
-}
+const toMongoFieldSet = (fields = {}) =>
+  mapValues(fields, fieldValue =>
+    isEmpty(fieldValue) ? 1 : toMongoFieldSet(fieldValue)
+  );
 
 export function astToFields(ast) {
-  return dotize.convert(astToBody(ast).doc);
-}
-
-/**
- * @param set
- */
-function extractSelectionSet(set): any {
-  let body = {};
-  set.selections.forEach(el => {
-    if (!el.selectionSet) {
-      body[el.name.value] = 1;
-    } else {
-      body[el.name.value] = extractSelectionSet(el.selectionSet);
-      if (el.arguments.length) {
-        let argumentMap = {};
-        el.arguments.forEach(arg => {
-          argumentMap[arg.name.value] = arg.value.value;
-        });
-      }
-    }
-  });
-
-  return body;
+  return toMongoFieldSet(graphqlFields(ast).doc);
 }
