@@ -4,8 +4,8 @@ This project is sponsored by [Cult of Coders](https://www.cultofcoders.com)
 
 The interfaces have been crafted to suit `Meteor` applications.
 
-* React integration: [`apollo-live-client`](https://github.com/cult-of-coders/apollo-live-client)
-* Meteor integration: https://github.com/cult-of-coders/apollo
+- React integration: [`apollo-live-client`](https://github.com/cult-of-coders/apollo-live-client)
+- Meteor integration: https://github.com/cult-of-coders/apollo
 
 Read more about GraphQL Subscriptions here: https://github.com/apollographql/graphql-subscriptions
 
@@ -13,17 +13,13 @@ Read more about GraphQL Subscriptions here: https://github.com/apollographql/gra
 
 ```gql
 type Subscription {
-  notifications: NotificationReactiveEvent
+  notifications: SubscriptionEvent
 }
 
-type NotificationReactiveEvent {
+# No need to add this, this is already implemented in apollo package
+type SubscriptionEvent {
   event: String
-
-  # If Notification has required fields, your subscription may not send them
-  # because your subscription only sends changesets, just be careful so you don't have unexpected errors
-
-  # If that's the case, you can create your own custom type, or the lazy version, use JSON if you don't want control over it
-  doc: Notification
+  doc: JSON
 }
 ```
 
