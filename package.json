@@ -9,7 +9,7 @@
   },
   "peerDependencies": {
     "uuid": "^3.2.x",
-    "graphql-subscriptions": "^0.5.x"
+    "graphql-subscriptions": "^0.5.x || ^1.0.0"
   },
   "scripts": {
     "clean": "rimraf dist coverage",
