@@ -1,3 +1,5 @@
+import * as dotize from 'dotize';
+
 export default function astToBody(ast) {
   const fieldNodes = ast.fieldNodes;
 
@@ -7,7 +9,7 @@ export default function astToBody(ast) {
 }
 
 export function astToFields(ast) {
-  return astToBody(ast).doc;
+  return dotize.convert(astToBody(ast).doc);
 }
 
 /**
