@@ -13,7 +13,7 @@
     "lodash.mapvalues": "^4.6.0"
   },
   "peerDependencies": {
-    "uuid": "^3.2.x",
+    "uuid": "^8.0.0",
     "graphql-subscriptions": "^0.5.x || ^1.0.0"
   },
   "scripts": {

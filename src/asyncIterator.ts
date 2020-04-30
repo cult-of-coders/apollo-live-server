@@ -2,7 +2,7 @@ import { Observable, Event, AsyncIteratorConfig } from './defs';
 import { pubsub, eventEmitter } from './pubsub';
 
 // Because `module.exports` gets weirdly transformed by typescript
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 let observers = {};
 
 /**
